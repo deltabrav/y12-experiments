@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Dot Counting Experiment&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f0f0f0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 600px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.group-selection {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.group-button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #007bff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px 30px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.group-button:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #0056b3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.experiment-area {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.square {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 378px; /* 10cm at 96 DPI */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 378px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #333;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.dot {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 22.68px; /* 6mm at 96 DPI */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 22.68px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: black;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.trial-info {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.countdown {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #ff6b6b;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.input-section {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.guess-input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #ddd;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.submit-button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #28a745;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-left: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.submit-button:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #218838;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.results {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.trial-results {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.final-result {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #007bff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.restart-button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #6c757d;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.restart-button:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #545b62;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1&gt;Dot Counting Experiment&lt;/h1&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="group-selection" id="groupSelection"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Select Your Group&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="group-button" onclick="startExperiment('A')"&gt;Group A&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="group-button" onclick="startExperiment('B')"&gt;Group B&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="experiment-area" id="experimentArea"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="trial-info" id="trialInfo"&gt;Trial 1 of 5&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="countdown" id="countdown"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="square" id="square"&gt;&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="input-section" id="inputSection"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p&gt;How many dots did you see?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" class="guess-input" id="guessInput" min="1" max="50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="submit-button" onclick="submitGuess()"&gt;Submit&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="results" id="results"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;Results&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="trialResults"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="final-result" id="finalResult"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="restart-button" onclick="restart()"&gt;Start New Experiment&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let currentGroup = '';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let currentTrial = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let totalTrials = 5;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let trialData = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let countdownTimer;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let displayTimer;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function startExperiment(group) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>currentGroup = group;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>currentTrial = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>trialData = [];</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('groupSelection').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('experimentArea').style.display = 'block';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>startTrial();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function startTrial() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>currentTrial++;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('trialInfo').textContent = `Trial ${currentTrial} of ${totalTrials}`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('inputSection').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('guessInput').value = '';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Countdown</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let countdown = 3;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('countdown').textContent = `Starting in ${countdown}...`;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>countdownTimer = setInterval(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>countdown--;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (countdown &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('countdown').textContent = `Starting in ${countdown}...`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('countdown').textContent = '';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>clearInterval(countdownTimer);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>showDots();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showDots() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const square = document.getElementById('square');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>square.innerHTML = '';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let dotCount;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let dots = [];</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (currentGroup === 'A') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Group A: Random number of dots (15-30), randomly placed</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dotCount = Math.floor(Math.random() * 16) + 15; // 15-30 dots</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dots = generateRandomDots(dotCount, 378, 378);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Group B: Random number of dots (15-30), clustered in center</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dotCount = Math.floor(Math.random() * 16) + 15; // 15-30 dots</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dots = generateClusteredDots(dotCount, 378, 378);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Create dot elements</p>
+<p class="p1"><span class="Apple-converted-space">            </span>dots.forEach(dot =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const dotElement = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dotElement.className = 'dot';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dotElement.style.left = dot.x + 'px';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>dotElement.style.top = dot.y + 'px';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>square.appendChild(dotElement);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Store actual count for this trial</p>
+<p class="p1"><span class="Apple-converted-space">            </span>trialData.push({ actual: dotCount, guess: null });</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Hide dots after 2.5 seconds</p>
+<p class="p1"><span class="Apple-converted-space">            </span>displayTimer = setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>square.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('inputSection').style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('guessInput').focus();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}, 2500);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function generateRandomDots(count, width, height) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dots = [];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dotRadius = 11.34; // Half of dot diameter</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const attempts = 1000; // Maximum attempts to place each dot</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; count; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let placed = false;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let attemptCount = 0;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>while (!placed &amp;&amp; attemptCount &lt; attempts) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const x = Math.random() * (width - 2 * dotRadius);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const y = Math.random() * (height - 2 * dotRadius);</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Check for overlap with existing dots</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>let overlaps = false;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>for (let j = 0; j &lt; dots.length; j++) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const distance = Math.sqrt(Math.pow(x - dots[j].x, 2) + Math.pow(y - dots[j].y, 2));</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (distance &lt; 2 * dotRadius) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>overlaps = true;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (!overlaps) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>dots.push({ x, y });</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>placed = true;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>attemptCount++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// If we couldn't place the dot without overlap after many attempts, place it anyway</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!placed) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const x = Math.random() * (width - 2 * dotRadius);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const y = Math.random() * (height - 2 * dotRadius);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>dots.push({ x, y });</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return dots;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function generateClusteredDots(count, width, height) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dots = [];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dotRadius = 11.34;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const centerX = width / 2 - dotRadius;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const centerY = height / 2 - dotRadius;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const clusterRadius = 80; // Radius of the cluster area</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; count; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let placed = false;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let attempts = 0;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>while (!placed &amp;&amp; attempts &lt; 1000) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Generate position within cluster radius</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const angle = Math.random() * 2 * Math.PI;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const distance = Math.random() * clusterRadius;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const x = centerX + distance * Math.cos(angle);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const y = centerY + distance * Math.sin(angle);</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Ensure dot is within bounds</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (x &gt;= 0 &amp;&amp; x &lt;= width - 2 * dotRadius &amp;&amp; y &gt;= 0 &amp;&amp; y &lt;= height - 2 * dotRadius) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// Check for overlap</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>let overlaps = false;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>for (let j = 0; j &lt; dots.length; j++) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>const dist = Math.sqrt(Math.pow(x - dots[j].x, 2) + Math.pow(y - dots[j].y, 2));</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>if (dist &lt; 2 * dotRadius) {</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>overlaps = true;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (!overlaps) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>dots.push({ x, y });</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>placed = true;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>attempts++;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// If we couldn't place the dot, place it at center with small random offset</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (!placed) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const x = centerX + (Math.random() - 0.5) * 20;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const y = centerY + (Math.random() - 0.5) * 20;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>dots.push({ x, y });</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>return dots;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function submitGuess() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const guess = parseInt(document.getElementById('guessInput').value);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(guess) || guess &lt; 1) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>alert('Please enter a valid number of dots.');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Store the guess</p>
+<p class="p1"><span class="Apple-converted-space">            </span>trialData[currentTrial - 1].guess = guess;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (currentTrial &lt; totalTrials) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>startTrial();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showResults();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showResults() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('experimentArea').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('results').style.display = 'block';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const trialResultsDiv = document.getElementById('trialResults');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const finalResultDiv = document.getElementById('finalResult');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let html = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let totalDifference = 0;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>trialData.forEach((trial, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const difference = Math.abs(trial.guess - trial.actual);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>totalDifference += difference;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>html += `&lt;div class="trial-results"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Trial ${index + 1}: Actual: ${trial.actual}, Guess: ${trial.guess},<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Difference: ${difference}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const meanDifference = (totalDifference / totalTrials).toFixed(2);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>trialResultsDiv.innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>finalResultDiv.innerHTML = `Mean Absolute Difference: ${meanDifference}`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function restart() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('results').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('groupSelection').style.display = 'block';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Clear any running timers</p>
+<p class="p1"><span class="Apple-converted-space">            </span>clearInterval(countdownTimer);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>clearTimeout(displayTimer);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Allow Enter key to submit guess</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('guessInput').addEventListener('keypress', function(e) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (e.key === 'Enter') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>submitGuess();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
