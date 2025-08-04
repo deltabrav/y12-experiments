@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Condition Experiment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #experiment-container {
+            width: 567px; /* 15cm at 96 DPI */
+            height: 567px;
+            border: 2px solid #333;
+            background-color: white;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        #square {
+            width: 151px; /* 4cm at 96 DPI */
+            height: 151px;
+            border: 3px solid black;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: transparent;
+        }
+        
+        #red-dot {
+            width: 8px;
+            height: 8px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        #letter {
+            position: absolute;
+            font-size: 36px;
+            font-weight: bold;
+            color: blue;
+            display: none;
+        }
+        
+        #instructions {
+            max-width: 567px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        #results {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        #timer {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        #status {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dual Condition Tracking Experiment</h1>
+    
+    <div id="instructions">
+        <p><strong>Condition 1:</strong> Keep the red dot inside the square using arrow keys for 30 seconds.</p>
+        <p><strong>Condition 2:</strong> Keep the red dot inside the square AND press the correct letter keys when they appear (6 letters total, new letter every 5 seconds).</p>
+        <p>The red dot moves randomly. Use arrow keys to control it. Don't let it touch or cross the square outline!</p>
+    </div>
+    
+    <button onclick="startCondition(1)">Start Condition 1</button>
+    <button onclick="startCondition(2)">Start Condition 2</button>
+    <button onclick="resetExperiment()" id="reset-btn" style="display: none;">Reset Experiment</button>
+    
+    <div id="timer"></div>
+    <div id="status"></div>
+    
+    <div id="experiment-container">
+        <div id="square"></div>
+        <div id="red-dot"></div>
+        <div id="letter"></div>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        let gameState = {
+            active: false,
+            condition: 0,
+            dotX: 283.5, // Center of container
+            dotY: 283.5,
+            dotVelocityX: 0,
+            dotVelocityY: 0,
+            crossings: 0,
+            timeLeft: 0,
+            lettersCorrect: 0,
+            currentLetter: '',
+            letterTimer: 0,
+            gameTimer: null,
+            letterInterval: null,
+            animationFrame: null
+        };
+        
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        const squareLeft = 283.5 - 77.5; // Center - half of square width (including border)
+        const squareRight = 283.5 + 77.5;
+        const squareTop = 283.5 - 77.5;
+        const squareBottom = 283.5 + 77.5;
+        
+        function startCondition(condition) {
+            gameState.active = true;
+            gameState.condition = condition;
+            gameState.dotX = 283.5;
+            gameState.dotY = 283.5;
+            gameState.crossings = 0;
+            gameState.lettersCorrect = 0;
+            gameState.currentLetter = '';
+            gameState.timeLeft = condition === 1 ? 30 : 30; // Both conditions run for 30 seconds max
+            
+            // Set random initial velocity
+            gameState.dotVelocityX = (Math.random() - 0.5) * 2;
+            gameState.dotVelocityY = (Math.random() - 0.5) * 2;
+            
+            document.getElementById('reset-btn').style.display = 'inline-block';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('letter').style.display = 'none';
+            
+            updateDisplay();
+            startGameLoop();
+            
+            if (condition === 2) {
+                startLetterSequence();
+            }
+        }
+        
+        function startGameLoop() {
+            gameState.gameTimer = setInterval(() => {
+                gameState.timeLeft--;
+                updateDisplay();
+                
+                if (gameState.timeLeft <= 0 || (gameState.condition === 2 && gameState.lettersCorrect >= 6)) {
+                    endGame();
+                }
+            }, 1000);
+            
+            animate();
+        }
+        
+        function animate() {
+            if (!gameState.active) return;
+            
+            // Add random movement to dot
+            gameState.dotVelocityX += (Math.random() - 0.5) * 0.35;
+            gameState.dotVelocityY += (Math.random() - 0.5) * 0.35;
+            
+            // Limit velocity
+            const maxVelocity = 2.1;
+            gameState.dotVelocityX = Math.max(-maxVelocity, Math.min(maxVelocity, gameState.dotVelocityX));
+            gameState.dotVelocityY = Math.max(-maxVelocity, Math.min(maxVelocity, gameState.dotVelocityY));
+            
+            // Update position
+            gameState.dotX += gameState.dotVelocityX;
+            gameState.dotY += gameState.dotVelocityY;
+            
+            // Keep dot within container bounds
+            if (gameState.dotX < 4) {
+                gameState.dotX = 4;
+                gameState.dotVelocityX = Math.abs(gameState.dotVelocityX);
+            }
+            if (gameState.dotX > 563) {
+                gameState.dotX = 563;
+                gameState.dotVelocityX = -Math.abs(gameState.dotVelocityX);
+            }
+            if (gameState.dotY < 4) {
+                gameState.dotY = 4;
+                gameState.dotVelocityY = Math.abs(gameState.dotVelocityY);
+            }
+            if (gameState.dotY > 563) {
+                gameState.dotY = 563;
+                gameState.dotVelocityY = -Math.abs(gameState.dotVelocityY);
+            }
+            
+            // Check if dot is outside square
+            checkSquareBoundary();
+            
+            // Update dot position
+            const dot = document.getElementById('red-dot');
+            dot.style.left = gameState.dotX + 'px';
+            dot.style.top = gameState.dotY + 'px';
+            
+            gameState.animationFrame = requestAnimationFrame(animate);
+        }
+        
+        function checkSquareBoundary() {
+            const dotLeft = gameState.dotX - 4;
+            const dotRight = gameState.dotX + 4;
+            const dotTop = gameState.dotY - 4;
+            const dotBottom = gameState.dotY + 4;
+            
+            // Check if dot is touching or outside the square
+            if (dotLeft <= squareLeft || dotRight >= squareRight || 
+                dotTop <= squareTop || dotBottom >= squareBottom) {
+                gameState.crossings++;
+                updateDisplay();
+            }
+        }
+        
+        function startLetterSequence() {
+            let letterCount = 0;
+            
+            function showNextLetter() {
+                if (letterCount >= 6 || !gameState.active) return;
+                
+                gameState.currentLetter = letters[Math.floor(Math.random() * letters.length)];
+                
+                // Position letter outside the square
+                const letterEl = document.getElementById('letter');
+                let letterX, letterY;
+                
+                do {
+                    letterX = Math.random() * 500 + 30;
+                    letterY = Math.random() * 500 + 30;
+                } while (letterX > squareLeft - 50 && letterX < squareRight + 50 && 
+                         letterY > squareTop - 50 && letterY < squareBottom + 50);
+                
+                letterEl.style.left = letterX + 'px';
+                letterEl.style.top = letterY + 'px';
+                letterEl.textContent = gameState.currentLetter;
+                letterEl.style.display = 'block';
+                
+                letterCount++;
+            }
+            
+            showNextLetter();
+            gameState.letterInterval = setInterval(showNextLetter, 5000);
+        }
+        
+        function endGame() {
+            gameState.active = false;
+            clearInterval(gameState.gameTimer);
+            clearInterval(gameState.letterInterval);
+            cancelAnimationFrame(gameState.animationFrame);
+            
+            document.getElementById('letter').style.display = 'none';
+            
+            let resultText = `<h3>Condition ${gameState.condition} Results:</h3>`;
+            resultText += `<p>Boundary Crossings: ${gameState.crossings}</p>`;
+            if (gameState.condition === 2) {
+                resultText += `<p>Letters Completed: ${gameState.lettersCorrect}/6</p>`;
+            }
+            
+            document.getElementById('results').innerHTML = resultText;
+        }
+        
+        function resetExperiment() {
+            gameState.active = false;
+            gameState.condition = 0;
+            gameState.dotX = 283.5;
+            gameState.dotY = 283.5;
+            gameState.crossings = 0;
+            gameState.lettersCorrect = 0;
+            gameState.currentLetter = '';
+            
+            clearInterval(gameState.gameTimer);
+            clearInterval(gameState.letterInterval);
+            cancelAnimationFrame(gameState.animationFrame);
+            
+            document.getElementById('red-dot').style.left = '283.5px';
+            document.getElementById('red-dot').style.top = '283.5px';
+            document.getElementById('letter').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('reset-btn').style.display = 'none';
+            
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            if (gameState.active) {
+                document.getElementById('timer').textContent = `Time: ${gameState.timeLeft}s`;
+                document.getElementById('status').textContent = 
+                    `Condition ${gameState.condition} | Crossings: ${gameState.crossings}` +
+                    (gameState.condition === 2 ? ` | Letters: ${gameState.lettersCorrect}/6` : '');
+            } else {
+                document.getElementById('timer').textContent = '';
+                document.getElementById('status').textContent = '';
+            }
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!gameState.active) return;
+            
+            const speed = 5;
+            
+            // Arrow key controls for the dot
+            switch(e.key) {
+                case 'ArrowUp':
+                    gameState.dotVelocityY -= speed;
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    gameState.dotVelocityY += speed;
+                    e.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                    gameState.dotVelocityX -= speed;
+                    e.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    gameState.dotVelocityX += speed;
+                    e.preventDefault();
+                    break;
+            }
+            
+            // Letter matching for condition 2
+            if (gameState.condition === 2 && gameState.currentLetter) {
+                if (e.key.toUpperCase() === gameState.currentLetter) {
+                    gameState.lettersCorrect++;
+                    gameState.currentLetter = '';
+                    document.getElementById('letter').style.display = 'none';
+                    
+                    if (gameState.lettersCorrect >= 6) {
+                        endGame();
+                    }
+                }
+            }
+        });
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
