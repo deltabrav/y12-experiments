@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Recall Experiment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .experiment-container {
+            width: 10cm;
+            height: 10cm;
+            background-color: white;
+            border: 2px solid #333;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .digit-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .colored-dot {
+            position: absolute;
+            width: 4mm;
+            height: 4mm;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: flicker 0.3s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+        
+        .input-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .input-field {
+            width: 200px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background-color: #0056b3;
+        }
+        
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .countdown {
+            font-size: 24px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .progress-container {
+            width: 200px;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #333;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            border-radius: 8px;
+            transition: width 0.1s linear;
+            width: 0%;
+        }
+        
+        .progress-text {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .phase-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px;
+            background-color: #e9ecef;
+            padding: 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="experiment-container" id="experimentContainer">
+        <div class="phase-indicator" id="phaseIndicator">Ready to Start</div>
+        
+        <div id="instructionSection">
+            <h3 style="margin-top: 0;">Digit Recall Experiment</h3>
+            <p style="text-align: center; font-size: 12px;">
+                You will see 7 digits appear one at a time for 2 seconds each.<br>
+                After a 10-second pause, type them in the correct order.
+            </p>
+            <button class="button" onclick="startCondition1()">Start Condition 1 (No Distraction)</button>
+            <button class="button" onclick="startCondition2()">Start Condition 2 (With Flickering Dots)</button>
+        </div>
+        
+        <div id="displaySection" style="display: none;">
+            <div class="digit-display" id="digitDisplay"></div>
+        </div>
+        
+        <div id="inputSection" style="display: none;">
+            <div class="input-section">
+                <p>Enter the digits in order:</p>
+                <input type="text" class="input-field" id="digitInput" maxlength="7" placeholder="Enter 7 digits">
+                <br>
+                <button class="button" onclick="submitAnswer(); return false;">Submit</button>
+                <button class="button" onclick="resetExperiment()">Reset</button>
+            </div>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        let currentCondition = 0;
+        let digitSequence = [];
+        let currentDigitIndex = 0;
+        let dots = [];
+        let condition1Score = null;
+        let condition2Score = null;
+        
+        function generateRandomDigits() {
+            const digits = [];
+            for (let i = 0; i < 7; i++) {
+                digits.push(Math.floor(Math.random() * 10));
+            }
+            return digits;
+        }
+        
+        function createColoredDots() {
+            const container = document.getElementById('experimentContainer');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            
+            // Clear existing dots
+            dots.forEach(dot => dot.remove());
+            dots = [];
+            
+            // Create 20-25 random dots
+            const numDots = 20 + Math.floor(Math.random() * 6);
+            for (let i = 0; i < numDots; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'colored-dot';
+                dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random position
+                dot.style.left = Math.random() * 85 + 5 + '%';
+                dot.style.top = Math.random() * 85 + 5 + '%';
+                
+                // Random animation delay and duration for asynchronous flickering
+                dot.style.animationDelay = Math.random() * 2 + 's';
+                dot.style.animationDuration = (0.4 + Math.random() * 0.8) + 's';
+                
+                container.appendChild(dot);
+                dots.push(dot);
+                
+                // Randomly reposition dots during the experiment
+                setInterval(() => {
+                    if (dots.includes(dot)) {
+                        dot.style.left = Math.random() * 85 + 5 + '%';
+                        dot.style.top = Math.random() * 85 + 5 + '%';
+                    }
+                }, 800 + Math.random() * 1200);
+            }
+        }
+        
+        function clearDots() {
+            dots.forEach(dot => dot.remove());
+            dots = [];
+        }
+        
+        function showPhase(text) {
+            document.getElementById('phaseIndicator').textContent = text;
+        }
+        
+        function hideAllSections() {
+            document.getElementById('instructionSection').style.display = 'none';
+            document.getElementById('displaySection').style.display = 'none';
+            document.getElementById('inputSection').style.display = 'none';
+        }
+        
+        function startCondition1() {
+            currentCondition = 1;
+            startExperiment();
+        }
+        
+        function startCondition2() {
+            currentCondition = 2;
+            startExperiment();
+        }
+        
+        function startExperiment() {
+            hideAllSections();
+            clearDots();
+            digitSequence = generateRandomDigits();
+            currentDigitIndex = 0;
+            
+            showPhase(`Condition ${currentCondition} - Presenting Digits`);
+            
+            if (currentCondition === 2) {
+                createColoredDots();
+            }
+            
+            document.getElementById('displaySection').style.display = 'block';
+            showNextDigit();
+        }
+        
+        function showNextDigit() {
+            if (currentDigitIndex < digitSequence.length) {
+                document.getElementById('digitDisplay').textContent = digitSequence[currentDigitIndex];
+                currentDigitIndex++;
+                
+                setTimeout(() => {
+                    document.getElementById('digitDisplay').textContent = '';
+                    setTimeout(showNextDigit, 100); // Brief pause between digits
+                }, 2000);
+            } else {
+                // All digits shown, start 10-second countdown
+                showPhase(`Condition ${currentCondition} - Wait Period`);
+                startCountdown();
+            }
+        }
+        
+        function startCountdown() {
+            let timeRemaining = 10;
+            const displayElement = document.getElementById('digitDisplay');
+            
+            // Create progress bar elements
+            displayElement.innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">Wait: ${timeRemaining}s</div>
+            `;
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            const totalTime = 10;
+            const intervalMs = 100; // Update every 100ms for smooth animation
+            const decrementAmount = intervalMs / 1000; // 0.1 seconds per update
+            
+            function updateProgress() {
+                timeRemaining -= decrementAmount;
+                
+                if (timeRemaining <= 0) {
+                    timeRemaining = 0;
+                }
+                
+                const progressPercent = ((totalTime - timeRemaining) / totalTime) * 100;
+                progressBar.style.width = progressPercent + '%';
+                progressText.textContent = `Wait: ${Math.ceil(timeRemaining)}s`;
+                
+                if (timeRemaining > 0) {
+                    setTimeout(updateProgress, intervalMs);
+                } else {
+                    // Countdown finished, show input
+                    clearDots();
+                    displayElement.innerHTML = '';
+                    document.getElementById('displaySection').style.display = 'none';
+                    document.getElementById('inputSection').style.display = 'block';
+                    showPhase(`Condition ${currentCondition} - Input Phase`);
+                    document.getElementById('digitInput').focus();
+                }
+            }
+            
+            updateProgress();
+        }
+        
+        function submitAnswer() {
+            const userInput = document.getElementById('digitInput').value.trim();
+            const correctSequence = digitSequence.join('');
+            
+            console.log('User input:', userInput);
+            console.log('Correct sequence:', correctSequence);
+            
+            if (userInput.length === 0) {
+                alert('Please enter some digits.');
+                return;
+            }
+            
+            if (userInput.length !== 7) {
+                alert(`Please enter exactly 7 digits. You entered ${userInput.length} digits.`);
+                return;
+            }
+            
+            // Check if input contains only digits
+            if (!/^\d{7}$/.test(userInput)) {
+                alert('Please enter only digits (0-9).');
+                return;
+            }
+            
+            let score = 0;
+            for (let i = 0; i < 7; i++) {
+                if (userInput[i] === correctSequence[i]) {
+                    score++;
+                }
+            }
+            
+            if (currentCondition === 1) {
+                condition1Score = score;
+            } else {
+                condition2Score = score;
+            }
+            
+            showResults(score, correctSequence, userInput);
+        }
+        
+        function showResults(score, correct, input) {
+            let resultsText = `<strong>Condition ${currentCondition} Results:</strong><br>`;
+            resultsText += `Correct sequence: ${correct}<br>`;
+            resultsText += `Your input: ${input}<br>`;
+            resultsText += `Score: ${score}/7<br><br>`;
+            
+            if (condition1Score !== null && condition2Score !== null) {
+                resultsText += `<strong>Final Results:</strong><br>`;
+                resultsText += `Condition 1 (No distraction): ${condition1Score}/7<br>`;
+                resultsText += `Condition 2 (With flickering dots): ${condition2Score}/7<br>`;
+                resultsText += `Difference: ${condition1Score - condition2Score}`;
+            } else {
+                const remaining = currentCondition === 1 ? 2 : 1;
+                resultsText += `Complete Condition ${remaining} to see final comparison.`;
+            }
+            
+            document.getElementById('results').innerHTML = resultsText;
+            showPhase('Results');
+        }
+        
+        function resetExperiment() {
+            condition1Score = null;
+            condition2Score = null;
+            currentCondition = 0;
+            clearDots();
+            hideAllSections();
+            document.getElementById('instructionSection').style.display = 'block';
+            document.getElementById('digitInput').value = '';
+            document.getElementById('results').innerHTML = '';
+            showPhase('Ready to Start');
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('digitInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
